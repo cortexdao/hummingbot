@@ -38,6 +38,12 @@ import {
   Trade as TradeTraderjoe,
   Fraction as TraderjoeFraction,
 } from '@traderjoe-xyz/sdk';
+import {
+  // Token as CurveToken,
+  Trade as CurveTrade,
+  CurrencyAmount as CurveAmount,
+  // Fraction as CurveFraction,
+} from '../connectors/curve/curve_helper';
 
 export type Tokenish =
   | Token
@@ -54,12 +60,14 @@ export type UniswapishTrade =
       SushiToken,
       SushiTradeType.EXACT_INPUT | SushiTradeType.EXACT_OUTPUT
     >
+  | CurveTrade
   | UniswapV3Trade<Currency, UniswapCoreToken, TradeType>;
 export type UniswapishAmount =
   | CurrencyAmount
   | CurrencyAmountPangolin
   | UniswapCoreCurrencyAmount<Currency>
   | CurrencyAmountTraderjoe
+  | CurveAmount
   | sushiCurrencyAmount<SushiCurrency | SushiToken>;
 export type Fractionish =
   | UniswapFraction
