@@ -21,6 +21,7 @@ import { AmmRoutes, AmmLiquidityRoutes } from './amm/amm.routes';
 import { PangolinConfig } from './connectors/pangolin/pangolin.config';
 import { TraderjoeConfig } from './connectors/traderjoe/traderjoe.config';
 import { UniswapConfig } from './connectors/uniswap/uniswap.config';
+import { CurveConfig } from './connectors/curve/curve.config';
 import { AvailableNetworks } from './services/config-manager-types';
 import morgan from 'morgan';
 import { SushiswapConfig } from './connectors/sushiswap/sushiswap.config';
@@ -68,6 +69,7 @@ interface ConnectorsResponse {
   pangolin: Array<AvailableNetworks>;
   sushiswap: Array<AvailableNetworks>;
   traderjoe: Array<AvailableNetworks>;
+  curve: Array<AvailableNetworks>;
 }
 
 gatewayApp.get(
@@ -75,6 +77,7 @@ gatewayApp.get(
   asyncHandler(async (_req, res: Response<ConnectorsResponse, {}>) => {
     res.status(200).json({
       uniswap: UniswapConfig.config.availableNetworks,
+      curve: CurveConfig.config.availableNetworks,
       pangolin: PangolinConfig.config.availableNetworks,
       sushiswap: SushiswapConfig.config.availableNetworks,
       traderjoe: TraderjoeConfig.config.availableNetworks,

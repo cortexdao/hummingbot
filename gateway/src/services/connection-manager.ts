@@ -36,7 +36,7 @@ export async function getConnector<T>(
     connectorInstance = Uniswap.getInstance(chain, network);
   } else if (chain === 'ethereum' && connector === 'sushiswap') {
     connectorInstance = Sushiswap.getInstance(chain, network);
-  } else if (chain === 'ethereum' && connector === 'curvep') {
+  } else if (chain === 'ethereum' && connector === 'curve') {
     connectorInstance = Curve.getInstance(chain, network);
   } else if (chain === 'ethereum' && connector === 'uniswapLP') {
     connectorInstance = UniswapLP.getInstance(chain, network);
