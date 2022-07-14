@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { asyncHandler } from '../services/error-handler';
-import { CurveConfig } from './curve/curve.config';
 import { PangolinConfig } from './pangolin/pangolin.config';
 import { SushiswapConfig } from './sushiswap/sushiswap.config';
 import { TraderjoeConfig } from './traderjoe/traderjoe.config';
 import { UniswapConfig } from './uniswap/uniswap.config';
+import { CurveConfig } from './curve/curve.config';
 
 export namespace ConnectorsRoutes {
   export const router = Router();
@@ -35,14 +35,14 @@ export namespace ConnectorsRoutes {
             available_networks: SushiswapConfig.config.availableNetworks,
           },
           {
-            name: 'traderjoe',
-            trading_type: TraderjoeConfig.config.tradingTypes,
-            available_networks: TraderjoeConfig.config.availableNetworks,
-          },
-          {
             name: 'curve',
             trading_type: CurveConfig.config.tradingTypes,
             available_networks: CurveConfig.config.availableNetworks,
+          },
+          {
+            name: 'traderjoe',
+            trading_type: TraderjoeConfig.config.tradingTypes,
+            available_networks: TraderjoeConfig.config.availableNetworks,
           },
         ],
       });
