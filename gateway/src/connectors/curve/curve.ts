@@ -15,7 +15,7 @@ import { ContractInterface } from '@ethersproject/contracts';
 // import { Pool, Route as V3RouteSDK } from '@uniswap/v3-sdk';
 import {
   // Token,
-  CurrencyAmount,
+  // CurrencyAmount,
   // Percent,
   // TradeType,
   // Price
@@ -222,8 +222,8 @@ export class Curve implements Uniswapish {
       data: encodeGetDy,
     });
     // const expectedAmount = BigNumber.from(getDyHexString).toString()
-    const amount = new Fraction(getDyHexString.toString(), 1);
-    const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+    const dy = new Fraction(getDyHexString.toString(), 1);
+    const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, dy.toString());
 
     // const executionPrice = amount.div(expectedAmount)
     const executionPrice = new Fraction(

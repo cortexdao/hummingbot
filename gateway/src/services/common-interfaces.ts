@@ -41,7 +41,7 @@ import {
 import {
   // Token as CurveToken,
   Trade as CurveTrade,
-  CurrencyAmount as CurveAmount,
+  // CurrencyAmount as CurveAmount,
   // Fraction as CurveFraction,
 } from '../connectors/curve/curve_helper';
 
@@ -67,7 +67,7 @@ export type UniswapishAmount =
   | CurrencyAmountPangolin
   | UniswapCoreCurrencyAmount<Currency>
   | CurrencyAmountTraderjoe
-  | CurveAmount
+  // | CurveAmount
   | sushiCurrencyAmount<SushiCurrency | SushiToken>;
 export type Fractionish =
   | UniswapFraction
