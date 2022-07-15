@@ -3,7 +3,7 @@
   "chain": "ethereum",
   "network": "mainnet",
   "quote": "USDC",
-  "base": "CXD",
-  "amount": "1",
+  "base": "DAI",
+  "amount": "100000000",
   "side": "SELL"
 }

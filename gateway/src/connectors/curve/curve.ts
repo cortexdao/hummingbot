@@ -33,9 +33,7 @@ import {
   SwapParameters,
   TradeType,
 } from '@sushiswap/sdk';
-import {
-  Trade as CurveTrade,
-} from '../curve/curve_helper';
+import { Trade as CurveTrade } from '../curve/curve_helper';
 import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import JSBI from 'jsbi';
 export declare type BigintIsh = JSBI | string | number;
@@ -221,19 +219,36 @@ export class Curve implements Uniswapish {
       to: CRV_CXD_Address,
       data: encodeGetDy,
     });
+    console.log(getDyHexString);
     // const expectedAmount = BigNumber.from(getDyHexString).toString()
-    const dy = new Fraction(getDyHexString.toString(), 1);
-    const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, dy.toString());
+    const dy = new Fraction(20, 1);
+    logger.info(`dy_numer: ${dy.numerator}`);
+    logger.info(`dy_numer: ${dy.numerator}`);
+    logger.info(`dy_denom: ${dy.denominator}`);
+    // dy_ = dy.numerator.div(dy.denominator)
+
+    const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, '20');
+    logger.info(`dy_tostring": ${dy.toString()}`);
+    logger.info(`expectedAmount: ${expectedAmount}`);
 
     // const executionPrice = amount.div(expectedAmount)
     const executionPrice = new Fraction(
-      amount.toString(),
+      amount.toBigInt(),
       expectedAmount.toString()
     );
+    logger.info(`executionPrice: ${executionPrice}`);
+
     const trades = new CurveTrade();
+    logger.info(`trades: ${trades}`);
+
     trades.executionPrice = executionPrice;
+    logger.info(`executionPrice: ${executionPrice}`);
+
     trades.baseToken = baseToken;
+    logger.info(`baseToken: ${baseToken}`);
+
     trades.quoteToken = quoteToken;
+    logger.info(`quoteToken: ${quoteToken}`);
 
     // const executionPrice = pricing
     return { trade: trades, expectedAmount: expectedAmount };
