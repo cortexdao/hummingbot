@@ -15,7 +15,7 @@ import { ContractInterface } from '@ethersproject/contracts';
 // import { Pool, Route as V3RouteSDK } from '@uniswap/v3-sdk';
 import {
   // Token,
-  // CurrencyAmount,
+  CurrencyAmount,
   // Percent,
   // TradeType,
   // Price
@@ -35,7 +35,6 @@ import {
 } from '@sushiswap/sdk';
 import {
   Trade as CurveTrade,
-  CurrencyAmount as CurveAmount,
 } from '../curve/curve_helper';
 import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import JSBI from 'jsbi';
@@ -223,9 +222,8 @@ export class Curve implements Uniswapish {
       data: encodeGetDy,
     });
     // const expectedAmount = BigNumber.from(getDyHexString).toString()
-    const expectedAmount = new Fraction(getDyHexString.toString(), 1);
-    const ExpectedAmount = new CurveAmount();
-    ExpectedAmount.expectedAmount = expectedAmount;
+    const amount = new Fraction(getDyHexString.toString(), 1);
+    const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, amount.toString());
 
     // const executionPrice = amount.div(expectedAmount)
     const executionPrice = new Fraction(
@@ -238,7 +236,7 @@ export class Curve implements Uniswapish {
     trades.quoteToken = quoteToken;
 
     // const executionPrice = pricing
-    return { trade: trades, expectedAmount: ExpectedAmount };
+    return { trade: trades, expectedAmount: expectedAmount };
   }
 
   async estimateBuyTrade(
