@@ -8,6 +8,7 @@ export declare class CurrencyAmount {
     rounding?: Rounding
   ): string;
 }
+
 export declare class Trade {
   executionPrice: Fraction;
   baseToken: Token;

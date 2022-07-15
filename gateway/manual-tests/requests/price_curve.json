@@ -2,8 +2,8 @@
   "connector": "curve",
   "chain": "ethereum",
   "network": "mainnet",
-  "quote": "1",
-  "base": "DAI",
+  "quote": "USDC",
+  "base": "CXD",
   "amount": "1",
-  "side": "BUY"
+  "side": "SELL"
 }

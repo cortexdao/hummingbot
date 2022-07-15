@@ -107,7 +107,6 @@ export async function getTradeInfo(
   const requestAmount: BigNumber = BigNumber.from(
     baseAmount.toFixed(baseToken.decimals).replace('.', '')
   );
-
   let expectedTrade: ExpectedTrade;
   if (tradeSide === 'BUY') {
     expectedTrade = await uniswapish.estimateBuyTrade(
@@ -117,6 +116,7 @@ export async function getTradeInfo(
       allowedSlippage
     );
   } else {
+    logger.info(`estimatingSellTrade`);
     expectedTrade = await uniswapish.estimateSellTrade(
       baseToken,
       quoteToken,
@@ -140,6 +140,11 @@ export async function price(
 ): Promise<PriceResponse> {
   const startTimestamp: number = Date.now();
   let tradeInfo: TradeInfo;
+  logger.info(`base: ${req.base},
+              quote: ${req.quote},
+              amount: ${req.amount},
+              side: ${req.side},
+              allowedSlippage: ${req.allowedSlippage}`);
   try {
     tradeInfo = await getTradeInfo(
       ethereumish,

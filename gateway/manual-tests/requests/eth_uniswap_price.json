@@ -1,6 +1,9 @@
 {
-  "quote": "WETH",
+  "connector": "curve",
+  "chain": "ethereum",
+  "network": "mainnet",
+  "quote": "USDC",
   "base": "DAI",
-  "amount": "1000000000000000000",
-  "side": "BUY"
+  "amount": "10",
+  "side": "SELL"
 }

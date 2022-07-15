@@ -86,7 +86,7 @@ export class Curve implements Uniswapish {
     if (!(chain + network in Curve._instances)) {
       Curve._instances[chain + network] = new Curve(chain, network);
     }
-
+    logger.info(`Fetching pair data for ${chain}-${network}.`);
     return Curve._instances[chain + network];
   }
 
@@ -97,6 +97,8 @@ export class Curve implements Uniswapish {
    * @param address Token address
    */
   public getTokenByAddress(address: string): Token {
+    logger.info(`token address ${address}.`);
+
     return this.tokenList[address];
   }
 
@@ -170,6 +172,8 @@ export class Curve implements Uniswapish {
    */
 
   async fetchData(baseToken: Token, quoteToken: Token): Promise<Pair> {
+    logger.info(`FetchDatafor.`);
+
     const pairAddress = Pair.getAddress(baseToken, quoteToken);
     const contract = new Contract(
       pairAddress,
@@ -205,14 +209,17 @@ export class Curve implements Uniswapish {
     };
     const CRV_CXD_Address = CURVE_CXD_ADDRESSES[1];
     const ifaceGetDy = new utils.Interface([
-      'function get_dy(uint256 i, uint256 j, uint256 dx)',
+      'function get_dy(uint256 i, uint256 j, uint256 dx) view returns (uint256)',
     ]);
-    const encodeGetDy = ifaceGetDy.encodeFunctionData('get_dy', [0, 1, amount]);
+    const encodeGetDy = ifaceGetDy.encodeFunctionData('get_dy', [0, 1, 10]);
+    logger.info(`Encoded Request: ${encodeGetDy}`);
+
     const provider = this.ethereum.provider;
+    logger.info(`Provider: ${provider._network}`);
+    // logger.info(`Address: ${provider.}`)
 
     const getDyHexString = await provider.call({
       to: CRV_CXD_Address,
-      // 4byte selector for `totalSupply()`
       data: encodeGetDy,
     });
     // const expectedAmount = BigNumber.from(getDyHexString).toString()
