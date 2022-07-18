@@ -2,26 +2,13 @@ import {
   InitializationError,
   SERVICE_UNITIALIZED_ERROR_CODE,
   SERVICE_UNITIALIZED_ERROR_MESSAGE,
-  UniswapishPriceError,
+  // UniswapishPriceError,
 } from '../../services/error-handler';
 import { CurveConfig } from './curve.config';
 import routerAbi from './curve_router_abi.json';
 
 import { ContractInterface } from '@ethersproject/contracts';
-// import { AlphaRouter } from '@uniswap/smart-order-router';
-// import { Trade, SwapRouter } from '@uniswap/router-sdk';
-// import { MethodParameters } from '@uniswap/v3-sdk';
-// import { Pair, Route as V2RouteSDK } from '@uniswap/v2-sdk';
-// import { Pool, Route as V3RouteSDK } from '@uniswap/v3-sdk';
-import {
-  // Token,
-  // CurrencyAmount,
-  // Percent,
-  // TradeType,
-  // Price
-  // Currency,
-  Fraction,
-} from '@uniswap/sdk-core';
+import { Fraction } from '@uniswap/sdk-core';
 import {
   Percent,
   Router,
@@ -29,7 +16,6 @@ import {
   CurrencyAmount,
   Trade,
   Pair,
-  // Currency,
   SwapParameters,
   TradeType,
 } from '@sushiswap/sdk';
@@ -49,9 +35,6 @@ import {
 } from 'ethers';
 import { percentRegexp } from '../../services/config-manager-v2';
 import { logger } from '../../services/logger';
-// import { trade } from '../uniswap/uniswap.controllers';
-// import { UsedScopeValues } from 'ajv/dist/compile/codegen/scope';
-// import { Currency, Route } from '@uniswap/sdk';
 
 export class Curve implements Uniswapish {
   private static _instances: { [name: string]: Curve };
@@ -192,12 +175,7 @@ export class Curve implements Uniswapish {
     baseToken: Token,
     quoteToken: Token,
     amount: BigNumber
-    // change promise type .... returning something else
-    // define the promise right here (2 bignumber)
   ): Promise<ExpectedTrade> {
-    // const nativeTokenAmount: CurrencyAmount<Token> =
-    //   CurrencyAmount.fromRawAmount(baseToken, amount.toString());
-    // const order_amount = amount.toString()
     logger.info(`Fetching pair data for ${'cxd'}-${'USDC'}.`);
 
     const CURVE_CXD_ADDRESSES = {
@@ -219,36 +197,22 @@ export class Curve implements Uniswapish {
 
     const provider = this.ethereum.provider;
     logger.info(`Provider: ${provider._network}`);
-    // logger.info(`Address: ${provider.}`)
 
     const getDyHexString = await provider.call({
       to: CRV_CXD_Address,
       data: encodeGetDy,
     });
     console.log(getDyHexString);
-    // const expectedAmount = BigNumber.from(getDyHexString).toString()
     const dy = BigNumber.from(getDyHexString.toString());
     const expectedAmount = CurrencyAmount.fromRawAmount(
       baseToken,
       dy.toString()
     );
 
-    // const dy = new Fraction(20, 1);
-    // logger.info(`dy_numer: ${dy.numerator}`);
-    // logger.info(`dy_numer: ${dy.numerator}`);
-    // logger.info(`dy_denom: ${dy.denominator}`);
-    // dy_ = dy.numerator.div(dy.denominator)
-
-    // const expectedAmount = CurrencyAmount.fromRawAmount(baseToken, dy.toSignificant(32));
     logger.info(`dy_tostring": ${dy.toString()}`);
     logger.info(`expectedAmount: ${expectedAmount}`);
 
-    // const executionPrice = amount.div(expectedAmount)
-    const executionPrice = new Fraction(
-      amount.toString(),
-      // expectedAmount.toSignificant(32)
-      dy.toString()
-    );
+    const executionPrice = new Fraction(amount.toString(), dy.toString());
     logger.info(`executionPrice: ${executionPrice}`);
 
     const trades = {
@@ -256,19 +220,8 @@ export class Curve implements Uniswapish {
       baseToken: baseToken,
       quoteToken: quoteToken,
     };
-    // new CurveTrade();
     logger.info(`trades: ${trades}`);
 
-    // trades.executionPrice = executionPrice;
-    // logger.info(`executionPrice: ${executionPrice}`);
-
-    // trades.baseToken = baseToken;
-    // logger.info(`baseToken: ${baseToken}`);
-
-    // trades.quoteToken = quoteToken;
-    // logger.info(`quoteToken: ${quoteToken}`);
-
-    // const executionPrice = pricing
     return { trade: trades, expectedAmount: expectedAmount };
   }
 
@@ -277,31 +230,53 @@ export class Curve implements Uniswapish {
     baseToken: Token,
     amount: BigNumber
   ): Promise<ExpectedTrade> {
-    const nativeTokenAmount: CurrencyAmount<Token> =
-      CurrencyAmount.fromRawAmount(baseToken, amount.toString());
+    logger.info(`Fetching pair data for ${'cxd'}-${'USDC'}.`);
 
-    const pair: Pair = await this.fetchData(quoteToken, baseToken);
+    const CURVE_CXD_ADDRESSES = {
+      1: '0x4535913573D299A6372ca43b90aA6Be1CF68f779',
+      4: '0x4535913573D299A6372ca43b90aA6Be1CF68f779',
+    };
+    const CRV_CXD_Address = CURVE_CXD_ADDRESSES[1];
+    const ifaceGetDy = new utils.Interface([
+      'function get_dy(uint256 i, uint256 j, uint256 dx) view returns (uint256)',
+    ]);
+    console.log(amount);
+    console.log(amount.toString());
+    const encodeGetDy = ifaceGetDy.encodeFunctionData('get_dy', [
+      1,
+      0,
+      amount.toString(),
+    ]);
+    logger.info(`Encoded Request: ${encodeGetDy}`);
 
-    const trades: Trade<Token, Token, TradeType.EXACT_OUTPUT>[] =
-      Trade.bestTradeExactOut([pair], quoteToken, nativeTokenAmount, {
-        maxHops: 1,
-      });
-    if (!trades || trades.length === 0) {
-      throw new UniswapishPriceError(
-        `priceSwapOut: no trade pair found for ${quoteToken.address} to ${baseToken.address}.`
-      );
-    }
-    logger.info(
-      `Best trade for ${quoteToken.address}-${baseToken.address}: ` +
-        `${trades[0].executionPrice.invert().toFixed(6)} ` +
-        `${baseToken.name}.`
+    const provider = this.ethereum.provider;
+    logger.info(`Provider: ${provider._network}`);
+
+    const getDyHexString = await provider.call({
+      to: CRV_CXD_Address,
+      data: encodeGetDy,
+    });
+    console.log(getDyHexString);
+    const dy = BigNumber.from(getDyHexString.toString());
+    const expectedAmount = CurrencyAmount.fromRawAmount(
+      baseToken,
+      dy.toString()
     );
 
-    const expectedAmount = trades[0].maximumAmountIn(
-      this.getSlippagePercentage()
-    );
+    logger.info(`dy_tostring": ${dy.toString()}`);
+    logger.info(`expectedAmount: ${expectedAmount}`);
 
-    return { trade: trades[0], expectedAmount };
+    const executionPrice = new Fraction(amount.toString(), dy.toString());
+    logger.info(`executionPrice: ${executionPrice}`);
+
+    const trades = {
+      executionPrice: executionPrice,
+      baseToken: baseToken,
+      quoteToken: quoteToken,
+    };
+    logger.info(`trades: ${trades}`);
+
+    return { trade: trades, expectedAmount: expectedAmount };
   }
 
   /**
