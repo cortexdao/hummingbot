@@ -8,6 +8,7 @@ import { Pangolin } from '../connectors/pangolin/pangolin';
 import { Ethereumish, Uniswapish, UniswapLPish } from './common-interfaces';
 import { Traderjoe } from '../connectors/traderjoe/traderjoe';
 import { Sushiswap } from '../connectors/sushiswap/sushiswap';
+import { Curve } from '../connectors/curve/curve';
 
 export async function getChain(chain: string, network: string) {
   let chainInstance: Ethereumish;
@@ -33,6 +34,8 @@ export async function getConnector<T>(
   let connectorInstance: Uniswapish | UniswapLPish;
   if (chain === 'ethereum' && connector === 'uniswap') {
     connectorInstance = Uniswap.getInstance(chain, network);
+  } else if (chain === 'ethereum' && connector === 'curve') {
+    connectorInstance = Curve.getInstance(chain, network);
   } else if (chain === 'ethereum' && connector === 'sushiswap') {
     connectorInstance = Sushiswap.getInstance(chain, network);
   } else if (chain === 'ethereum' && connector === 'uniswapLP') {
