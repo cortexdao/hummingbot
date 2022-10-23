@@ -56,7 +56,7 @@ class CXDTwap(ScriptStrategyBase):
 
             low_interval_range = self.trade_interval - self.trade_interval_range
             high_interval_range = self.trade_interval + self.trade_interval_range
-            self.next_trade_interval = Decimal(random.randrange(low_interval_range, high_interval_range))
+            self.next_trade_interval = float(random.randrange(low_interval_range, high_interval_range))
 
     def did_create_buy_order(self, event: BuyOrderCreatedEvent):
         """
