@@ -47,10 +47,13 @@ class CXDTwap(ScriptStrategyBase):
 
             amount = random_quote_amount / price
 
-            if is_buy:
-                self.buy(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
-            else:
-                self.sell(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
+            try:
+                if is_buy:
+                    self.buy(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
+                else:
+                    self.sell(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
+            except Exception:
+                return
 
             self.last_ordered_ts = self.current_timestamp
 
