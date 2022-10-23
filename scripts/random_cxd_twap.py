@@ -1,4 +1,5 @@
 import logging
+import random
 
 from hummingbot.core.event.events import (
     BuyOrderCompletedEvent,
@@ -14,25 +15,48 @@ from hummingbot.strategy.script_strategy_base import Decimal, OrderType, ScriptS
 
 class CXDTwap(ScriptStrategyBase):
     """
-    This example shows how to set up a simple strategy to buy a token on fixed (dollar) amount on a regular basis
+    This example shows how to set up a simple strategy to buy and sell a token on fixed (dollar) amount on a regular basis
     """
     #: Define markets to instruct Hummingbot to create connectors on the exchanges and markets you need
+    exchange = "mexc"
+    trading_pair = "CXD-USDT"
+
     markets = {"mexc": {"CXD-USDT"}}
+
     #: The last time the strategy places a buy order
     last_ordered_ts = 0.
-    #: Buying interval (in seconds)
-    buy_interval = 10.
-    #: Buying amount (in dollars - USDT)
-    buy_quote_amount = Decimal("100")
+    #: Trade interval (in seconds)
+    trade_interval = 180
+    trade_interval_range = 60
+    next_trade_interval = 180.
+    #: Trade amount (in dollars - USDT)
+    quote_amount = 10
+    quote_amount_range = 5
 
     def on_tick(self):
-        # Check if it is time to buy
-        if self.last_ordered_ts < (self.current_timestamp - self.buy_interval):
-            # Lets set the order price to the best bid
-            price = self.connectors["binance_paper_trade"].get_price("BTC-USDT", False)
-            amount = self.buy_quote_amount / price
-            self.buy("binance_paper_trade", "BTC-USDT", amount, OrderType.LIMIT, price)
+        # Check if it is time to trade
+        if self.last_ordered_ts < (self.current_timestamp - self.next_trade_interval):
+            # Decide to buy or sell
+            is_buy = random.choice([True, False])
+
+            price = self.connectors[self.exchange].get_price(self.trading_pair, is_buy)
+
+            low_amount_range = self.quote_amount - self.quote_amount_range
+            high_amount_range = self.quote_amount + self.quote_amount_range
+            random_quote_amount = Decimal(random.randrange(low_amount_range, high_amount_range))
+
+            amount = random_quote_amount / price
+
+            if is_buy:
+                self.buy(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
+            else:
+                self.sell(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
+
             self.last_ordered_ts = self.current_timestamp
+
+            low_interval_range = self.trade_interval - self.trade_interval_range
+            high_interval_range = self.trade_interval + self.trade_interval_range
+            self.next_trade_interval = Decimal(random.randrange(low_interval_range, high_interval_range))
 
     def did_create_buy_order(self, event: BuyOrderCreatedEvent):
         """
