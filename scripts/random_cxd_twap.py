@@ -37,7 +37,7 @@ class CXDTwap(ScriptStrategyBase):
 
     def on_tick(self):
         if not self.trade_sequence:
-            sequence_count = random.randrange(5, 10)
+            sequence_count = random.randrange(15, 30)
             is_buy = random.choice([True, False])
             self.trade_sequence = [is_buy for step in range(sequence_count)]
 
