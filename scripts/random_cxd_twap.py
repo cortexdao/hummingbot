@@ -33,13 +33,20 @@ class CXDTwap(ScriptStrategyBase):
     quote_amount = 10
     quote_amount_range = 5
 
+    trade_sequence = [True, True, True, True, True]
+
     def on_tick(self):
+        if not self.trade_sequence:
+            sequence_count = random.randrange(5, 10)
+            is_buy = random.choice([True, False])
+            self.trade_sequence = [is_buy for step in range(sequence_count)]
+
         # Check if it is time to trade
         if self.last_ordered_ts < (self.current_timestamp - self.next_trade_interval):
             # Decide to buy or sell
-            is_buy = random.choice([True, False])
+            current_step = self.trade_sequence.pop()
 
-            price = self.connectors[self.exchange].get_price(self.trading_pair, is_buy)
+            price = self.connectors[self.exchange].get_price(self.trading_pair, current_step)
 
             low_amount_range = self.quote_amount - self.quote_amount_range
             high_amount_range = self.quote_amount + self.quote_amount_range
@@ -48,7 +55,7 @@ class CXDTwap(ScriptStrategyBase):
             amount = random_quote_amount / price
 
             try:
-                if is_buy:
+                if current_step:
                     self.buy(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
                 else:
                     self.sell(self.exchange, self.trading_pair, amount, OrderType.LIMIT, price)
