@@ -26,12 +26,12 @@ class CXDTwap(ScriptStrategyBase):
     #: The last time the strategy places a buy order
     last_ordered_ts = 0.
     #: Trade interval (in seconds)
-    trade_interval = 180
-    trade_interval_range = 60
-    next_trade_interval = 180.
+    trade_interval = 150
+    trade_interval_range = 90
+    next_trade_interval = 150.
     #: Trade amount (in dollars - USDT)
-    quote_amount = 10
-    quote_amount_range = 5
+    quote_amount = 15
+    quote_amount_range = 10
 
     trade_sequence = [True, True, True, True, True]
 
@@ -46,11 +46,12 @@ class CXDTwap(ScriptStrategyBase):
             # Decide to buy or sell
             current_step = self.trade_sequence.pop()
 
-            price = self.connectors[self.exchange].get_price(self.trading_pair, current_step)
-
             low_amount_range = self.quote_amount - self.quote_amount_range
             high_amount_range = self.quote_amount + self.quote_amount_range
             random_quote_amount = Decimal(random.randrange(low_amount_range, high_amount_range))
+
+            result = self.connectors[self.exchange].get_price_for_quote_volume(self.trading_pair, current_step, random_quote_amount)
+            price = result.result_price
 
             amount = random_quote_amount / price
 
