@@ -43,6 +43,8 @@ class CXDTwap(ScriptStrategyBase):
 
         # Check if it is time to trade
         if self.last_ordered_ts < (self.current_timestamp - self.next_trade_interval):
+            self.cancel_all_orders()
+
             # Decide to buy or sell
             current_step = self.trade_sequence.pop()
 
@@ -68,6 +70,10 @@ class CXDTwap(ScriptStrategyBase):
             low_interval_range = self.trade_interval - self.trade_interval_range
             high_interval_range = self.trade_interval + self.trade_interval_range
             self.next_trade_interval = float(random.randrange(low_interval_range, high_interval_range))
+
+    def cancel_all_orders(self):
+        for order in self.get_active_orders(connector_name=self.exchange):
+            self.cancel(self.exchange, order.trading_pair, order.client_order_id)
 
     def did_create_buy_order(self, event: BuyOrderCreatedEvent):
         """
